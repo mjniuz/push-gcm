@@ -87,6 +87,7 @@ var app = {
 				break;
 
 			case 'message':
+				navigator.notification.alert(e.message);
 				// this is the actual push notification. its format depends on the data model from the push server
 				alert('message = '+e.message+' msgcnt = '+e.msgcnt);
 				break;
