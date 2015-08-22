@@ -51,13 +51,13 @@ var app = {
         listeningElement.setAttribute('style', 'display:none;');
         receivedElement.setAttribute('style', 'display:block;');
 		
-		function myMsgClickHandler(msg){
-			console.log("Clicked On notification" + JSON.stringify(msg));
-			alert(JSON.stringify(msg));
-		}
-		PushbotsPlugin.onNotificationClick(myMsgClickHandler);
+		PushbotsPlugin.onNotificationClick(app.myMsgClickHandler);
         console.log('Received Event: ' + id);
-    }
+    },
+	myMsgClickHandler: function(msg) {
+		console.log("Clicked On notification" + JSON.stringify(msg));
+		alert(JSON.stringify(msg));
+	}
 };
 // notif event
 (function($){
