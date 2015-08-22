@@ -38,6 +38,7 @@ var app = {
 			PushbotsPlugin.initializeiOS("55d73997177959a41f8b4569");
 		}
 		if(PushbotsPlugin.isAndroid()){
+			alert('Android');
 			PushbotsPlugin.initializeAndroid("55d73997177959a41f8b4569", "854409438626");
 		}
 						
