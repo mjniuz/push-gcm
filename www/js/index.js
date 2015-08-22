@@ -34,23 +34,14 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
-		pushNotification = window.plugins.pushNotification;
-		navigator.geolocation.getCurrentPosition(app.onSuccess, app.onError);
+		if(PushbotsPlugin.isiOS()){
+			PushbotsPlugin.initializeiOS("55d73997177959a41f8b4569");
+		}
+		if(PushbotsPlugin.isAndroid()){
+			PushbotsPlugin.initializeAndroid("55d73997177959a41f8b4569", "854409438626");
+		}
+						
     },
-	onSuccess: function(position){ 
-		var element = document.getElementById('geolocation');
-        element.innerHTML = 'Latitude: '           + position.coords.latitude              + '<br />' +
-                            'Longitude: '          + position.coords.longitude             + '<br />' +
-                            'Altitude: '           + position.coords.altitude              + '<br />' +
-                            'Accuracy: '           + position.coords.accuracy              + '<br />' +
-                            'Altitude Accuracy: '  + position.coords.altitudeAccuracy      + '<br />' +
-                            'Heading: '            + position.coords.heading               + '<br />' +
-                            'Speed: '              + position.coords.speed                 + '<br />' +
-                            'Timestamp: '          + position.timestamp                    + '<br />';
-	},
-	onError: function(error){  
-		alert('code: '    + error.code    + '\n' +   'message: ' + error.message + '\n');
-	},
     // Update DOM on a Received Event
     receivedEvent: function(id) {
         var parentElement = document.getElementById(id);
@@ -59,90 +50,45 @@ var app = {
 
         listeningElement.setAttribute('style', 'display:none;');
         receivedElement.setAttribute('style', 'display:block;');
-        console.log('Received Event: ' + id);
 		
-		alert('receivedEvent '+device.platform);
-		var pushNotification = window.plugins.pushNotification;
-		$("#app-status-ul").append('<li>registering ' + device.platform + '</li>');
-		pushNotification.register(app.successHandler, app.errorHandler,{"senderID":"854409438626","ecb":"app.onNotificationGCM"});		
-    },
-	// result contains any message sent from the plugin call
-	successHandler: function(result) {
-		alert('Callback Success! Result = '+result)
-	},
-	errorHandler:function(error) {
-		alert(error);
-	},
-	onNotificationGCM: function(e) {
-		//alert("In the onNotificationGCM " + e.event);
-		switch( e.event )
-		{
-			case 'registered':
-				if ( e.regid.length > 0 )
-				{
-					console.log("Regid " + e.regid);
-					localStorage.setItem('regid',e.regid);
-					alert('registration id = '+e.regid);
-				}
-				break;
-
-			case 'message':
-				navigator.notification.alert(e.message);
-				// this is the actual push notification. its format depends on the data model from the push server
-				alert('message = '+e.message+' msgcnt = '+e.msgcnt);
-				break;
-
-			case 'error':
-				alert('GCM error = '+e.msg);
-				break;
-
-			default:
-				alert('An unknown GCM event has occurred');
-				break;
+		function myMsgClickHandler(msg){
+			console.log("Clicked On notification" + JSON.stringify(msg));
+			alert(JSON.stringify(msg));
 		}
-	}
+		PushbotsPlugin.onNotificationClick(myMsgClickHandler);
+        console.log('Received Event: ' + id);
+    }
 };
 // notif event
-	function getCookie(name){
-		return localStorage.getItem(name);
-	}
-  
-	
-	function makecokies(key,val){
-		localStorage.setItem(key,val);
-	}
-	
-	function delcokies(key){
-		localStorage.removeItem(key);
-	}
 (function($){
 $(document)
 // Login
 .ready(function()
 {	
-	$('#regidShow').click(function()
+	$('#close').click(function()
 	{
-		alert(getCookie('regid'));
+		$("#hasil").hide("slow");
+		$("#close").hide("slow");
 	})
-	$('#regidPush').click(function()
+	$('#cek').click(function()
 	{
-		var rootUrl = 'http://api.dicoba.net/api/';
-		var origin = rootUrl + 'example/push';
-		var regid = getCookie('regid');
-		var dataString = 'regid='+regid;
+		var rootUrl = 'http://www.sastrahost.com/mutasi/';
+		var origin = rootUrl + 'cekApp.php';
+		var dataString = 'token=true';
 		$.ajax({
 		type: "POST",
 		url: origin,
 		data: dataString,
 		cache: false,
-		beforeSend: function(){ $("#regidPush").text('Connecting...');},
+		beforeSend: function(){ $("#cek").text('Connecting...');},
 		success: function(data){
 		if(data != "false"){
 			//alert(data);
 			$("#cek").text('Cek Lagi');
-			$("#hasil").html("<h3>"+data.why+"</h3>");
+			$("#hasil").show("slow");
+			$("#close").show("slow");
+			$("#hasil").html("<h3>"+data+"</h3>");
 			//alert('harusnya bisa');
-			$("#regidPush").text('Push Now');
 		}else{
 			$("#hasil").html("<span style='color:#cc0000'>Error:</span> Invalid email and password. ");
 			//alert('API nya gagal');
